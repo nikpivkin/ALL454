@@ -6,6 +6,7 @@ authors = ["Nikita Pivkin <nikita.pivkin@smartforce.io>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+simple_http_server = "^0.19.4"
 
 [tool.poetry.dev-dependencies]
 
