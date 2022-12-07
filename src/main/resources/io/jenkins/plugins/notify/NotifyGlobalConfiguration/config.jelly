@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <f:section title="${%Sample Plugin}">
+        <f:entry field="url" title="${%Url}">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="Event" description="Job lifecycle event triggering notification" field="event">
+            <select class="setting-input" name="event">
+                <f:option value="all" selected="${endpoint.event == 'all'}">All Events</f:option>
+                <f:option value="initialized" selected="${endpoint.event == 'queued'}">Job Initialized</f:option>
+                <f:option value="started" selected="${endpoint.event == 'started'}">Job Started</f:option>
+                <f:option value="completed" selected="${endpoint.event == 'completed'}">Job Completed</f:option>
+                <f:option value="finalized" selected="${endpoint.event == 'finalized'}">Job Finalized</f:option>
+                <f:option value="deleted" selected="${endpoint.event == 'failed'}">Job Deleted</f:option>
+                <f:option value="failed" selected="${endpoint.event == 'failed'}">Job Failed</f:option>
+            </select>
+        </f:entry>
+    </f:section>
+</j:jelly>
