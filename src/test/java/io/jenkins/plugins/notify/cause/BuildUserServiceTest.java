@@ -9,7 +9,6 @@ import jenkins.model.Jenkins;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class BuildUserServiceTest {
 
     @Before
     public void init() {
-        buildUserService = Mockito.spy(BuildUserService.getInstance());
+        buildUserService = spy(BuildUserService.getInstance());
     }
 
     @Test
