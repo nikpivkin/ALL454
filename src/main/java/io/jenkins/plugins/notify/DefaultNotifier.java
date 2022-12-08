@@ -6,6 +6,7 @@ import hudson.EnvVars;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import io.jenkins.plugins.notify.model.JiraResponse;
 import io.jenkins.plugins.notify.model.JobState;
 
 import java.io.IOException;
@@ -17,8 +18,7 @@ import java.net.http.HttpResponse;
 @SuppressWarnings("rawtypes")
 public class DefaultNotifier implements Notifier {
 
-    private transient final Gson gson = new GsonBuilder()
-//            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+    private final Gson gson = new GsonBuilder()
             .create();
 
     private DefaultNotifier() {
@@ -54,12 +54,12 @@ public class DefaultNotifier implements Notifier {
 
         // TODO add auth, timeout?
         HttpClient client = HttpClient.newBuilder()
-//                .connectTimeout()
-//                .authenticator()
                 .build();
 
+        String finalEndpoint = String.format("%s?apikey=%s", url, configuration.getApiKey());
+
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
+                .uri(URI.create(finalEndpoint))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -67,9 +67,14 @@ public class DefaultNotifier implements Notifier {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             int statusCode = response.statusCode();
+            JiraResponse jiraResponse = gson.fromJson(response.body(), JiraResponse.class);
 
             if (statusCode / 100 < 3) {
-                listener.getLogger().println(Messages.Notifier_BuildStateSendSuccessfully());
+                if (jiraResponse.isSuccess()) {
+                    listener.getLogger().println(Messages.Notifier_BuildStateSendSuccessfully());
+                } else {
+                    listener.getLogger().println(Messages.Notifier_FailedSendBuildState(url));
+                }
             } else {
                 listener.getLogger().println(Messages.Notifier_FailedSendBuildState(url));
             }

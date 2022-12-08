@@ -5,6 +5,9 @@
         <f:entry field="url" title="${%Url}">
             <f:textbox/>
         </f:entry>
+        <f:entry field="apiKey" title="${%API Key}">
+            <f:textbox/>
+        </f:entry>
         <f:entry title="Event" description="Job lifecycle event triggering notification" field="trigger">
             <f:select />
         </f:entry>

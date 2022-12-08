@@ -19,8 +19,9 @@ public class NotifyGlobalConfiguration extends GlobalConfiguration {
     private static final String DISPLAY_NAME = "Jira Notifier";
 
     private String url;
-
+    private String apiKey;
     private NotificationTrigger trigger = NotificationTrigger.DEFAULT;
+
     public NotifyGlobalConfiguration() {
         // When Jenkins is restarted, load any saved configuration from disk.
         load();
@@ -57,6 +58,15 @@ public class NotifyGlobalConfiguration extends GlobalConfiguration {
         save();
     }
 
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    @DataBoundSetter
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
     public FormValidation doCheckUrl(@QueryParameter String value) {
         if (StringUtils.isEmpty(value)) {
             return FormValidation.warning(Messages.GlobalConfiguration_UrlCannotBeEmpty());
@@ -73,6 +83,14 @@ public class NotifyGlobalConfiguration extends GlobalConfiguration {
         } catch (URISyntaxException e) {
             return FormValidation.error(Messages.GlobalConfiguration_UrlIsNotValid());
         }
+        return FormValidation.ok();
+    }
+
+    public FormValidation doCheckApiKey(@QueryParameter String value) {
+        if (StringUtils.isEmpty(value)) {
+            return FormValidation.warning(Messages.GlobalConfiguration_ApiKeyCannotBeEmpty());
+        }
+
         return FormValidation.ok();
     }
 
