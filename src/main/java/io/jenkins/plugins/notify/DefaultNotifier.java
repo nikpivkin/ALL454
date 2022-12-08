@@ -2,6 +2,7 @@ package io.jenkins.plugins.notify;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import hudson.EnvVars;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -42,8 +43,13 @@ public class DefaultNotifier implements Notifier {
         }
 
         String url = configuration.getUrl();
+        EnvVars envVars = new EnvVars();
+        try {
+            envVars = run.getEnvironment(listener);
+        } catch (IOException | InterruptedException ignored) {
+        }
 
-        JobState jobState = new JobState(run, eventType);
+        JobState jobState = new JobState(run, eventType, envVars);
         String json = gson.toJson(jobState);
 
         // TODO add auth, timeout?
