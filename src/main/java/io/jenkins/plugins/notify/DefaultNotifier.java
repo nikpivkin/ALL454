@@ -75,14 +75,15 @@ public class DefaultNotifier implements Notifier {
 
     private boolean isNotify(EventType eventType, Result result) {
         NotifyGlobalConfiguration configuration = NotifyGlobalConfiguration.get();
-        String event = configuration.getEvent();
-        switch (event) {
-            case "all": return true;
-            case "failed": {
+        NotificationTrigger trigger = configuration.getTrigger();
+        if (trigger == null) return false;
+        switch (trigger) {
+            case ALL: return true;
+            case FAILED: {
                 if (result == null) return false;
-                if (result.equals(Result.FAILURE) && eventType.isEqualInLower("finalized")) return true;
+                if (result.equals(Result.FAILURE) && eventType.equals(EventType.FINALIZED)) return true;
             }
-            default: return eventType.isEqualInLower(event);
+            default: return eventType.isEqual(trigger.getValue());
         }
     }
 }

@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import jenkins.model.GlobalConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -17,17 +18,17 @@ public class NotifyGlobalConfiguration extends GlobalConfiguration {
 
     private static final String DISPLAY_NAME = "Jira Notifier";
 
-    /** @return the singleton instance */
-    public static NotifyGlobalConfiguration get() {
-        return ExtensionList.lookupSingleton(NotifyGlobalConfiguration.class);
-    }
-
     private String url;
-    private String event = "all";
 
+    private NotificationTrigger trigger = NotificationTrigger.DEFAULT;
     public NotifyGlobalConfiguration() {
         // When Jenkins is restarted, load any saved configuration from disk.
         load();
+    }
+
+    /** @return the singleton instance */
+    public static NotifyGlobalConfiguration get() {
+        return ExtensionList.lookupSingleton(NotifyGlobalConfiguration.class);
     }
 
     @NonNull
@@ -46,13 +47,13 @@ public class NotifyGlobalConfiguration extends GlobalConfiguration {
         save();
     }
 
-    public String getEvent() {
-        return event;
+    public NotificationTrigger getTrigger() {
+        return trigger;
     }
 
     @DataBoundSetter
-    public void setEvent(String event) {
-        this.event = event;
+    public void setTrigger(NotificationTrigger trigger) {
+        this.trigger = trigger;
         save();
     }
 
@@ -73,6 +74,10 @@ public class NotifyGlobalConfiguration extends GlobalConfiguration {
             return FormValidation.error(Messages.GlobalConfiguration_UrlIsNotValid());
         }
         return FormValidation.ok();
+    }
+
+    public ListBoxModel doFillTriggerItems() {
+        return NotificationTrigger.toListBoxModel(trigger);
     }
 
     public boolean isConfigured() {
