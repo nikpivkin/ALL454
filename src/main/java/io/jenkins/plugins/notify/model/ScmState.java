@@ -9,7 +9,7 @@ public class ScmState {
     private final String commit;
 
     public ScmState(EnvVars envVars) {
-        url = envVars.get( "GIT_URL" );
+        url = envVars.get("GIT_URL");
         branch = envVars.get("GIT_BRANCH");
         commit = envVars.get("GIT_COMMIT");
     }

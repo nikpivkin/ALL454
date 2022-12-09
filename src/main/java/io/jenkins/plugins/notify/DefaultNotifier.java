@@ -1,7 +1,7 @@
 package io.jenkins.plugins.notify;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import hudson.EnvVars;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -14,17 +14,18 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressWarnings("rawtypes")
 public class DefaultNotifier implements Notifier {
 
-    private final Gson gson = new GsonBuilder()
-            .create();
-
-    private DefaultNotifier() {
-    }
+    private static final Logger log = Logger.getLogger(DefaultNotifier.class.getName());
+    private static final Gson gson = new Gson();
 
     private final static Notifier INSTANCE = new DefaultNotifier();
+
+    private DefaultNotifier() {}
 
     public static Notifier getInstance() {
         return INSTANCE;
@@ -64,11 +65,13 @@ public class DefaultNotifier implements Notifier {
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
+        String responseBody = "";
+
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             int statusCode = response.statusCode();
-            JiraResponse jiraResponse = gson.fromJson(response.body(), JiraResponse.class);
-
+            responseBody = response.body();
+            JiraResponse jiraResponse = gson.fromJson(responseBody, JiraResponse.class);
             if (statusCode / 100 < 3) {
                 if (jiraResponse.isSuccess()) {
                     listener.getLogger().println(Messages.Notifier_BuildStateSendSuccessfully());
@@ -81,6 +84,10 @@ public class DefaultNotifier implements Notifier {
 
         } catch (IOException | InterruptedException e) {
             listener.getLogger().println(Messages.Notifier_FailedSendBuildState(url));
+        } catch (JsonParseException jpe ) {
+            log.log(Level.SEVERE, String.format("Failed to parse the response: %s", responseBody), jpe);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Unexpected error", e);
         }
     }
 

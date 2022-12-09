@@ -27,6 +27,7 @@
 
         <gson.version>2.10</gson.version>
         <assertj.version>3.23.1</assertj.version>
+        <wiremock.version>2.35.0</wiremock.version>
     </properties>
 
     <build>
@@ -73,10 +74,6 @@
             <artifactId>gson</artifactId>
             <version>${gson.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.jenkins-ci.plugins</groupId>-->
-<!--            <artifactId>credentials</artifactId>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.mockito</groupId>
@@ -97,7 +94,27 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
-            <version>2.35.0</version>
+            <version>${wiremock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-basic-steps</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-cps</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-job</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
