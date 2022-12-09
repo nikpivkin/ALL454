@@ -10,7 +10,7 @@ public class JobState {
     private final String name;
     private final String displayName;
     private final String url;
-    private String fullUrl;
+    private final String fullUrl;
     private final BuildState buildState;
 
     public JobState(final Run run, EventType eventType, EnvVars envVars) {
@@ -19,9 +19,7 @@ public class JobState {
         this.displayName = job.getDisplayName();
         this.url = job.getUrl();
         String rootUrl = Jenkins.get().getRootUrl();
-        if (rootUrl != null) {
-            this.fullUrl = rootUrl + job.getUrl();
-        }
+        this.fullUrl = rootUrl != null ? rootUrl + job.getUrl() : null ;
         this.buildState = new BuildState(run, eventType, envVars);
     }
 }

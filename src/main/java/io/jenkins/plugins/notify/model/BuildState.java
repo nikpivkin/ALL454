@@ -29,9 +29,7 @@ public class BuildState {
         this.queueId = run.getQueueId();
         this.url = run.getUrl();
         final String rootUrl = Jenkins.get().getRootUrl();
-        if (rootUrl != null) {
-            this.fullUrl = rootUrl + run.getUrl();
-        }
+        this.fullUrl = rootUrl != null ? rootUrl + run.getUrl() : null ;
         Result result = run.getResult();
         this.result = result != null ? result.toExportedObject() : "";
         this.cause = BuildUserService.getInstance().build(run);
