@@ -20,7 +20,6 @@
         <jenkins.version>2.361.4</jenkins.version>
         <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
 
-        <java.version>11</java.version>
         <java.level>${java.version}</java.level>
 
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
@@ -33,12 +32,31 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
-                    <release>${java.version}</release>
+                    <includes>
+                        <include>io/jenkins/plugins/**/*</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/model/*</exclude>
+                        <exclude>**/*Messages*</exclude>
+                    </excludes>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
