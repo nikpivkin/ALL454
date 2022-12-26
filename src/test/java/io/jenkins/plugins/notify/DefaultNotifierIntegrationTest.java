@@ -6,6 +6,8 @@ import hudson.model.*;
 import hudson.plugins.git.BranchSpec;
 import hudson.plugins.git.GitSCM;
 import hudson.tasks.BuildTrigger;
+import hudson.triggers.SCMTrigger;
+import hudson.triggers.TimerTrigger;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Before;
@@ -78,8 +80,7 @@ public class DefaultNotifierIntegrationTest {
         );
         verifyThatRequestBodyPathContains("$.name", "parent");
         verifyThatRequestBodyPathContains("$.buildState.cause.userId", "USER_ID");
-
-        waitUntilProjectIsBuilt(childProject);
+        r.waitUntilNoActivity();
 
         verifyThatRequestBodyPathContains("$.name", "child");
         verifyThatRequestBodyPathContains("$.buildState.cause.userId", "USER_ID");
@@ -91,6 +92,34 @@ public class DefaultNotifierIntegrationTest {
 
         verify(exactly(2), postRequestedFor(anyUrl()));
 
+    }
+
+    @Test
+    public void whenCauseIsSCMTrigger_ThenBuildUserIsNotEmpty() throws Exception {
+        buildSuccess(new SCMTrigger.SCMTriggerCause("scm"));
+
+        verifyThatRequestBodyPathExist("$.buildState.cause.userId");
+    }
+
+    @Test
+    public void whenCauseIsRemote_ThenBuildUserIsNotEmpty() throws Exception {
+        buildSuccess( new Cause.RemoteCause("host", "addr"));
+
+        verifyThatRequestBodyPathExist("$.buildState.cause.userId");
+    }
+
+    @Test
+    public void whenCauseIsTimerTrigger_ThenBuildUserIsNotEmpty() throws Exception {
+        buildSuccess(new TimerTrigger.TimerTriggerCause());
+
+        verifyThatRequestBodyPathExist("$.buildState.cause.userId");
+    }
+
+    private void buildSuccess(Cause cause) throws Exception {
+        FreeStyleProject project = r.createFreeStyleProject("project");
+        project.getBuildersList().add(new MockBuilder(Result.SUCCESS));
+
+        r.assertBuildStatusSuccess(project.scheduleBuild2(0, cause));
     }
 
     @Test
@@ -142,14 +171,5 @@ public class DefaultNotifierIntegrationTest {
         verify(postRequestedFor(anyUrl())
                 .withRequestBody(matchingJsonPath(path))
         );
-    }
-
-    private void waitUntilProjectIsBuilt(Project p) throws InterruptedException {
-        int i = 20;
-        while (p.isBuilding() || p.isInQueue()) {
-            Thread.sleep(1000);
-            i--;
-        }
-        assertThat(p.getBuilds().toArray()).hasSize(1);
     }
 }

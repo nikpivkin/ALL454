@@ -34,29 +34,27 @@ public class DefaultNotifier implements Notifier {
     @Override
     public void notify(Run run, TaskListener listener, EventType eventType) {
 
-        NotifyGlobalConfiguration configuration = NotifyGlobalConfiguration.get();
-
         if (!isNotify(eventType, run.getResult())) return;
+
+        NotifyGlobalConfiguration configuration = NotifyGlobalConfiguration.get();
 
         if (!configuration.isConfigured()) {
             listener.getLogger().println(Messages.Global_ConfigureNotifierInGlobalConfiguration());
             return;
         }
 
-        String url = configuration.getUrl();
         EnvVars envVars = new EnvVars();
         try {
             envVars = run.getEnvironment(listener);
-        } catch (IOException | InterruptedException ignored) {
-        }
+        } catch (IOException | InterruptedException ignored) {}
 
         JobState jobState = new JobState(run, eventType, envVars);
         String json = gson.toJson(jobState);
 
         // TODO add auth, timeout?
-        HttpClient client = HttpClient.newBuilder()
-                .build();
+        HttpClient client = HttpClient.newBuilder().build();
 
+        String url = configuration.getUrl();
         String finalEndpoint = String.format("%s?apikey=%s", url, configuration.getApiKey());
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -72,6 +70,10 @@ public class DefaultNotifier implements Notifier {
             int statusCode = response.statusCode();
             responseBody = response.body();
             JiraResponse jiraResponse = gson.fromJson(responseBody, JiraResponse.class);
+            if (jiraResponse == null) {
+                listener.getLogger().println(Messages.Notifier_FailedSendBuildState(url));
+                return;
+            }
             if (statusCode / 100 < 3) {
                 if (jiraResponse.isSuccess()) {
                     listener.getLogger().println(Messages.Notifier_BuildStateSendSuccessfully());

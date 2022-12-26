@@ -90,18 +90,18 @@ public class BuildUserServiceTest {
     }
 
     @Test
-    public void whenCauseIsUpStream_ThenGetBuildFromUpstreamAndReCall() {
+    public void whenCauseIsUpStream_ThenGetBuildUserFromParentJob() {
 
         final String upstreamProject = "PROJ";
-        final int upstreamBuild = 90;
+        final int upstreamBuildNumber = 90;
 
         Run run = mock(Run.class);
         Job upstreamJob = mock(Job.class);
-        when(upstreamJob.getBuildByNumber(upstreamBuild)).thenReturn(run);
+        when(upstreamJob.getBuildByNumber(upstreamBuildNumber)).thenReturn(run);
 
         Cause.UpstreamCause cause = mock(Cause.UpstreamCause.class);
         when(cause.getUpstreamProject()).thenReturn(upstreamProject);
-        when(cause.getUpstreamBuild()).thenReturn(upstreamBuild);
+        when(cause.getUpstreamBuild()).thenReturn(upstreamBuildNumber);
 
         Run runWithUpstreamCause = mock(Run.class);
         when(runWithUpstreamCause.getCause(Cause.UpstreamCause.class)).thenReturn(cause);
@@ -115,6 +115,7 @@ public class BuildUserServiceTest {
         }
 
         verify(buildUserService, times(2)).build(any(Run.class));
+        verify(buildUserService).build(run);
     }
 
 }

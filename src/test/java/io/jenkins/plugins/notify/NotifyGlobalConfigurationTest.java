@@ -9,29 +9,20 @@ import org.junit.Rule;
 import org.jvnet.hudson.test.JenkinsSessionRule;
 
 @Ignore
-public class SampleConfigurationTest {
+public class NotifyGlobalConfigurationTest {
 
     @Rule
     public JenkinsSessionRule sessions = new JenkinsSessionRule();
 
-    /**
-     * Tries to exercise enough code paths to catch common mistakes:
-     * <ul>
-     * <li>missing {@code load}
-     * <li>missing {@code save}
-     * <li>misnamed or absent getter/setter
-     * <li>misnamed {@code textbox}
-     * </ul>
-     */
     @Test
     public void uiAndStorage() throws Throwable {
         sessions.then(r -> {
             assertNull("not set initially", NotifyGlobalConfiguration.get().getUrl());
             HtmlForm config = r.createWebClient().goTo("configure").getFormByName("config");
-            HtmlTextInput textbox = config.getInputByName("_.label");
-            textbox.setText("hello");
+            HtmlTextInput textbox = config.getInputByName("_.url");
+            textbox.setText("http://localhost");
             r.submit(config);
-            assertEquals("global config page let us edit it", "hello", NotifyGlobalConfiguration.get().getUrl());
+            assertEquals("global config page let us edit it", "http://localhost", NotifyGlobalConfiguration.get().getUrl());
         });
         sessions.then(r -> {
             assertEquals("still there after restart of Jenkins", "hello", NotifyGlobalConfiguration.get().getUrl());

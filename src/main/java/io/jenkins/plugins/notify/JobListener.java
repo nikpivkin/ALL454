@@ -24,7 +24,6 @@ public class JobListener extends RunListener<Run> {
 
     @Override
     public void onInitialize(Run run) {
-
         notifier.notify(run, TaskListener.NULL, EventType.INITIALIZED);
     }
 
