@@ -19,11 +19,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class BuildUserService {
+public class BuildCauseService {
 
-    private final static BuildUserService INSTANCE = new BuildUserService();
-    private final static Logger log = Logger.getLogger(BuildUserService.class.getName());
-    private final static Map<Class<? extends Cause>, CauseDeterminant> causeDeterminants;
+    private static final BuildCauseService INSTANCE = new BuildCauseService();
+    private static final Logger log = Logger.getLogger(BuildCauseService.class.getName());
+    private static final Map<Class<? extends Cause>, CauseDeterminant> causeDeterminants;
 
     static {
         causeDeterminants = Stream.of(
@@ -34,15 +34,15 @@ public class BuildUserService {
         ).collect(Collectors.toMap(CauseDeterminant::getCauseClass, Function.identity()));
     }
 
-    public static BuildUserService getInstance() {
+    public static BuildCauseService getInstance() {
         return INSTANCE;
     }
 
-    private BuildUserService() {
+    private BuildCauseService() {
 
     }
 
-    public BuildUser build(Run<?, ?> run) {
+    public UnifiedBuildCause build(Run<?, ?> run) {
         Optional<Cause.UpstreamCause> upstreamCause = Optional.ofNullable(
                 run.getCause(Cause.UpstreamCause.class)
         );
@@ -65,7 +65,7 @@ public class BuildUserService {
                                             Arrays.toString(run.getCauses().toArray())
                                     )
                             );
-                            return BuildUser.EMPTY;
+                            return UnifiedBuildCause.EMPTY;
                         }));
 
     }

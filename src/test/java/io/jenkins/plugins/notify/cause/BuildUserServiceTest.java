@@ -16,20 +16,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class BuildUserServiceTest {
-    private BuildUserService buildUserService;
+    private BuildCauseService buildUserService;
 
     @Before
     public void init() {
-        buildUserService = spy(BuildUserService.getInstance());
+        buildUserService = spy(BuildCauseService.getInstance());
     }
 
     @Test
     public void returnEmptyBuildUser_WhenNotCauseToBuild() {
         Run run = mock(Run.class);
 
-        BuildUser buildUser = buildUserService.build(run);
+        UnifiedBuildCause buildUser = buildUserService.build(run);
 
-        assertThat(buildUser).isEqualTo(BuildUser.EMPTY);
+        assertThat(buildUser).isEqualTo(UnifiedBuildCause.EMPTY);
     }
 
     @Test
@@ -42,11 +42,11 @@ public class BuildUserServiceTest {
         when(cause.getUserName()).thenReturn(userName);
         when(run.getCauses()).thenReturn(List.of(cause));
 
-        BuildUser buildUser = buildUserService.build(run);
+        UnifiedBuildCause buildUser = buildUserService.build(run);
 
-        BuildUser expectedUser = new BuildUser();
-        expectedUser.setUserId(userId);
-        expectedUser.setFullName(userName);
+        UnifiedBuildCause expectedUser = new UnifiedBuildCause();
+        expectedUser.setId(userId);
+        expectedUser.setName(userName);
 
         assertThat(buildUser)
                 .usingRecursiveComparison()
@@ -59,9 +59,9 @@ public class BuildUserServiceTest {
         Cause.RemoteCause cause = mock(Cause.RemoteCause.class);
         when(run.getCauses()).thenReturn(List.of(cause));
 
-        BuildUser buildUser = buildUserService.build(run);
+        UnifiedBuildCause buildUser = buildUserService.build(run);
 
-        assertThat(buildUser.getUserId())
+        assertThat(buildUser.getId())
                 .isNotNull();
     }
 
@@ -71,9 +71,9 @@ public class BuildUserServiceTest {
         TimerTrigger.TimerTriggerCause cause = mock(TimerTrigger.TimerTriggerCause.class);
         when(run.getCauses()).thenReturn(List.of(cause));
 
-        BuildUser buildUser = buildUserService.build(run);
+        UnifiedBuildCause buildUser = buildUserService.build(run);
 
-        assertThat(buildUser.getUserId())
+        assertThat(buildUser.getId())
                 .isNotNull();
     }
 
@@ -83,9 +83,9 @@ public class BuildUserServiceTest {
         SCMTrigger.SCMTriggerCause cause = mock(SCMTrigger.SCMTriggerCause.class);
         when(run.getCauses()).thenReturn(List.of(cause));
 
-        BuildUser buildUser = buildUserService.build(run);
+        UnifiedBuildCause buildUser = buildUserService.build(run);
 
-        assertThat(buildUser.getUserId())
+        assertThat(buildUser.getId())
                 .isNotNull();
     }
 

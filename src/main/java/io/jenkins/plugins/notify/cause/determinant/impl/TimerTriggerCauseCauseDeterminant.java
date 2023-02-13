@@ -1,14 +1,15 @@
 package io.jenkins.plugins.notify.cause.determinant.impl;
 
 import hudson.triggers.TimerTrigger;
-import io.jenkins.plugins.notify.cause.BuildUser;
+import io.jenkins.plugins.notify.cause.UnifiedBuildCause;
 import io.jenkins.plugins.notify.cause.determinant.CauseDeterminant;
 
 public class TimerTriggerCauseCauseDeterminant implements CauseDeterminant<TimerTrigger.TimerTriggerCause> {
+
     @Override
-    public BuildUser determine(TimerTrigger.TimerTriggerCause cause) {
-        BuildUser buildUser = new BuildUser();
-        buildUser.setUserId("TimerTrigger");
+    public UnifiedBuildCause determine(TimerTrigger.TimerTriggerCause cause) {
+        UnifiedBuildCause buildUser = new UnifiedBuildCause();
+        buildUser.setId("TimerTrigger");
         return buildUser;
     }
 

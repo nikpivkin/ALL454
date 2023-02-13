@@ -1,14 +1,15 @@
 package io.jenkins.plugins.notify.cause.determinant.impl;
 
 import hudson.triggers.SCMTrigger;
-import io.jenkins.plugins.notify.cause.BuildUser;
+import io.jenkins.plugins.notify.cause.UnifiedBuildCause;
 import io.jenkins.plugins.notify.cause.determinant.CauseDeterminant;
 
 public class SCMTriggerCauseDeterminant implements CauseDeterminant<SCMTrigger.SCMTriggerCause> {
+
     @Override
-    public BuildUser determine(SCMTrigger.SCMTriggerCause cause) {
-        BuildUser buildUser = new BuildUser();
-        buildUser.setUserId("SCM");
+    public UnifiedBuildCause determine(SCMTrigger.SCMTriggerCause cause) {
+        UnifiedBuildCause buildUser = new UnifiedBuildCause();
+        buildUser.setId("SCM");
         return buildUser;
     }
 

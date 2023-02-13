@@ -79,11 +79,11 @@ public class DefaultNotifierIntegrationTest {
                 parentProject.scheduleBuild2(0, new Cause.UserIdCause(user.getId()))
         );
         verifyThatRequestBodyPathContains("$.name", "parent");
-        verifyThatRequestBodyPathContains("$.buildState.cause.userId", "USER_ID");
+        verifyThatRequestBodyPathContains("$.buildState.cause.id", "USER_ID");
         r.waitUntilNoActivity();
 
         verifyThatRequestBodyPathContains("$.name", "child");
-        verifyThatRequestBodyPathContains("$.buildState.cause.userId", "USER_ID");
+        verifyThatRequestBodyPathContains("$.buildState.cause.id", "USER_ID");
 
         assertThat(childProject.getLastBuild())
                 .isNotNull()
@@ -98,21 +98,21 @@ public class DefaultNotifierIntegrationTest {
     public void whenCauseIsSCMTrigger_ThenBuildUserIsNotEmpty() throws Exception {
         buildSuccess(new SCMTrigger.SCMTriggerCause("scm"));
 
-        verifyThatRequestBodyPathExist("$.buildState.cause.userId");
+        verifyThatRequestBodyPathExist("$.buildState.cause.id");
     }
 
     @Test
     public void whenCauseIsRemote_ThenBuildUserIsNotEmpty() throws Exception {
         buildSuccess( new Cause.RemoteCause("host", "addr"));
 
-        verifyThatRequestBodyPathExist("$.buildState.cause.userId");
+        verifyThatRequestBodyPathExist("$.buildState.cause.id");
     }
 
     @Test
     public void whenCauseIsTimerTrigger_ThenBuildUserIsNotEmpty() throws Exception {
         buildSuccess(new TimerTrigger.TimerTriggerCause());
 
-        verifyThatRequestBodyPathExist("$.buildState.cause.userId");
+        verifyThatRequestBodyPathExist("$.buildState.cause.id");
     }
 
     private void buildSuccess(Cause cause) throws Exception {
